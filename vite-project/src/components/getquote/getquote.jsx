@@ -17,7 +17,7 @@ const GetQuote = () => {
     }, [])
 
     const removeTouch = async (id) => {
-        await fetch('http://127.0.0.1:5000/removequote', {
+        await fetch('http://0.0.0.0/0:5000/removequote', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
