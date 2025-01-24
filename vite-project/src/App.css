@@ -1,0 +1,14 @@
+/* Add global styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+.app-container {
+  display: flex;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-top: 60px; /* Align below navbar */
+}

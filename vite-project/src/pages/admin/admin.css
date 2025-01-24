@@ -1,0 +1,19 @@
+/* Styles for the overall admin container */
+.admin {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .sidebar {
+    width: 1000px; /* Adjust width as needed */
+    background-color: #333; /* Sidebar background color */
+    color: #fff; /* Text color */
+    padding: 20px; /* Padding inside the sidebar */
+  }
+  
+  /* Styles for the content area */
+  .content {
+    flex: 1; /* Take remaining space */
+    padding: 20px; /* Padding inside the content area */
+  }
+  
