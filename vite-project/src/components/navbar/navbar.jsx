@@ -1,6 +1,6 @@
 import React from 'react'
 import './navbar.css'
-import navlogo from '../../assets/logo.jpg'
+import navlogo from '../../assets/devon.png'
 import footer_logo from '../../assets/footer_logo.jpg'
 import drop_down from '../../assets/dd.jpg'
 

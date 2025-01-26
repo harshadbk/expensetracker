@@ -16,7 +16,7 @@ const App = () => {
           <Routes>
              <Route path='/getquote' element={<GetQuote/>}></Route>
             <Route path="/listproduct" element={<ListProduct />} />
-            <Route path="/" element={<h1>Welcome to Admin Dashboard</h1>} />
+            <Route path="/" element={<h1>Welcome to Devionx Admin Dashboard</h1>} />
           </Routes>
         </div>
       </div>
