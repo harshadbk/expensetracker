@@ -4,7 +4,7 @@ import "./LoginForm.css";
 import { Link } from "react-router-dom";
 
 const LoginForm = () => {
-    const API_URL = process.env.REACT_APP_API_URL;
+    
     const [formData, setFormData] = useState({
         email: "", // ✅ Changed 'username' to 'email'
         password: "",
@@ -21,7 +21,7 @@ const LoginForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${API_URL}/login`, {
+            const response = await fetch("https://devionxwebsitebackend.onrender.com/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

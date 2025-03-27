@@ -3,13 +3,13 @@ import remove_icon from "../../assets/remove.jpg";
 import "./listproduct.css";
 
 const ListProduct = () => {
-  const API_URL = process.env.REACT_APP_API_URL;
+  
   const [allTouch, setAllTouch] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchInfo = async () => {
     try {
-      const response = await fetch(`${API_URL}/gettouch`);
+      const response = await fetch("https://devionxwebsitebackend.onrender.com/gettouch");
       const data = await response.json();
       setAllTouch(data);
     } catch (error) {

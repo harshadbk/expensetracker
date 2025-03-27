@@ -3,11 +3,10 @@ import remove_icon from "../../assets/remove.jpg";
 import "./getquote.css";
 
 const GetQuote = () => {
-  const API_URL = process.env.REACT_APP_API_URL;
   const [allQuote, setAllQuote] = useState([]);
 
   const fetchInfo = async () => {
-    await fetch(`${API_URL}/allquote`)
+    await fetch("https://devionxwebsitebackend.onrender.com/allquote")
       .then((resp) => resp.json())
       .then((data) => {
         setAllQuote(data);
@@ -19,7 +18,7 @@ const GetQuote = () => {
   }, []);
 
   const removeTouch = async (id) => {
-    await fetch(`${API_URL}/removequote`, {
+    await fetch("https://devionxwebsitebackend.onrender.com/removequote", {
       method: "POST",
       headers: {
         Accept: "application/json",
