@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
+
 const LoginForm = () => {
+  const API_URL = process.env.REACT_APP_API_URL;
   const [formData, setFormData] = useState({
     name: "",
     email: "", // ✅ Changed from 'username' to 'email'
@@ -26,7 +28,7 @@ const LoginForm = () => {
     }
 
     try {
-      const response = await fetch("https://devionxwebsitebackend.onrender.com/signup", {
+      const response = await fetch(`${API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)

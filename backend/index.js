@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "*",  // Allow all origins OR replace * with your Netlify URL
+  origin: "https://devionxwebsitebackend.onrender.com",  // Allow all origins OR replace * with your Netlify URL
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
