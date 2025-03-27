@@ -8,7 +8,7 @@ const ListProduct = () => {
 
   const fetchInfo = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/gettouch");
+      const response = await fetch("https://devionxwebsitebackend.onrender.com/gettouch");
       const data = await response.json();
       setAllTouch(data);
     } catch (error) {
