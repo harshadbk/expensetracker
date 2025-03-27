@@ -18,6 +18,12 @@ const Sidebar = () => {
           <p>Get Quote</p>
         </div>
       </Link>
+      <Link to="/getquote" style={{ textDecoration: 'none' }}>
+        <div className="sidebar-item">
+          <img src={list_product_icon} alt="List Product" />
+          <p>Expenses</p>
+        </div>
+      </Link>
     </div>
   );
 }

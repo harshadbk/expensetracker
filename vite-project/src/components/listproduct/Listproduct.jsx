@@ -1,65 +1,87 @@
-import React, { useEffect, useState } from 'react'
-import remove_icon from '../../assets/remove.jpg'
-import './listproduct.css'
+import React, { useEffect, useState } from "react";
+import remove_icon from "../../assets/remove.jpg";
+import "./listproduct.css";
 
 const ListProduct = () => {
-
   const [allTouch, setAllTouch] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchInfo = async () => {
-    await fetch('http://127.0.0.1:5000/gettouch')
-      .then((resp) => resp.json())
-      .then((data) => { setAllTouch(data) });
-  }
+    try {
+      const response = await fetch("http://127.0.0.1:5000/gettouch");
+      const data = await response.json();
+      setAllTouch(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchInfo();
-  }, [])
+  }, []);
 
   const removeTouch = async (id) => {
-    await fetch('http://127.0.0.1:5000/removetouch', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: id })
-    })
-    await fetchInfo();
-  }
+    const confirmDelete = window.confirm("Are you sure you want to delete this entry?");
+    if (!confirmDelete) return;
+
+    try {
+      await fetch("http://127.0.0.1:5000/removetouch", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      fetchInfo(); // Refresh data after deletion
+    } catch (error) {
+      console.error("Error removing entry:", error);
+    }
+  };
 
   return (
-    <div className='listproduct'>
+    <div className="listproduct">
       <h1>All Get In Touch</h1>
-      <br />
-      <div className="listproduct-format-main">
-        <p>Name</p>
-        <p>Email</p>
-        <p>Phone</p>
-        <p>Subject</p>
-        <p>Message</p>
-        <p>Remove</p>
-      </div>
-      <div className="listproduct-allproduct">
-        <hr />
-        {allTouch.map((product, index) => {
-          return (
-            <React.Fragment key={index}>
-              <div className="listproduct-format-main listproduct-format">
-                <p>{product.name}</p>
-                <p>{product.email ? product.email : "None"}</p>
-                <p>{product.phone}</p>
-                <p>{product.subject}</p>
-                <p>{product.message}</p>
-                <img onClick={() => { removeTouch(product.id) }} className='listproduct-remove-icon' src={remove_icon} alt="Remove" />
-              </div>
-              <hr />
-            </React.Fragment>
-          )
-        })}
-      </div>
+
+      {loading ? (
+        <p className="loading">Loading...</p>
+      ) : (
+        <table className="listproduct-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allTouch.map((product, index) => (
+              <tr key={index}>
+                <td>{product.name}</td>
+                <td>{product.email || "None"}</td>
+                <td>{product.phone}</td>
+                <td>{product.subject}</td>
+                <td className="message-column">{product.message}</td>
+                <td>
+                  <img
+                    onClick={() => removeTouch(product.id)}
+                    className="listproduct-remove-icon"
+                    src={remove_icon}
+                    alt="Remove"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default ListProduct;

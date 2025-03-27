@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,82 @@ mongoose
   .then(() => console.log('Connected to MongoDB Atlas'))
   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
+const User = mongoose.model('user', {
+  name: {
+    type: String,
+  },
+  email: {
+    type: String,
+    unique: true,
+  },
+  password: {
+    type: String,
+  },
+  con_password: {
+    type: String
+  }
+})
+
+app.post('/signup', async (req, res) => {
+  try {
+      const { name, email, password, conpassword } = req.body;
+
+      // Check if username exists
+      let check = await User.findOne({ email });
+      if (check) {
+          return res.status(400).json({ success: false, error: "Username already exists!" });
+      }
+
+      // Check if passwords match
+      if (password !== conpassword) {
+          return res.status(400).json({ success: false, error: "Passwords do not match!" });
+      }
+
+      // Create new user
+      const user = new User({ name, email, password, con_password: conpassword });
+      await user.save();
+
+      // Generate JWT token
+      const token = jwt.sign({ userId: user._id }, 'secret_ecom', { expiresIn: '1h' });
+
+      res.json({ success: true, token });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, error: "Server error" });
+  }
+});
+
+app.post('/login', async (req, res) => {
+  let user = await User.findOne({
+      email: req.body.email
+  });
+  if (user) {
+      const passcompare = req.body.password === user.password;
+      if (passcompare) {
+          const data = {
+              user: {
+                  id: user.id
+              }
+          };
+
+          const token = jwt.sign(data, 'secret_ecom');
+          res.json({
+              success: true,
+              token
+          });
+      } else {
+          res.json({
+              success: false,
+              errors: "Wrong password"
+          });
+      }
+  } else {
+      res.json({
+          success: false,
+          errors: "Wrong email id"
+      });
+  }
+});
 
 const Touch = mongoose.model('Touch', {
   id: {
@@ -119,7 +196,7 @@ const Quote = mongoose.model('quote', {
   email: {
     type: String,
     required: true,
-    unique:false
+    unique: false
   },
   phone: {
     type: String,
@@ -162,13 +239,13 @@ app.post('/addquote', async (req, res) => {
     const quote = new Quote({
       id: id,
       name: req.body.name,
-      company:req.body.company,
+      company: req.body.company,
       email: req.body.email,
       phone: req.body.phone,
-      services:req.body.services,
-      budget:req.body.budget,
-      timeline:req.body.timeline,
-      description:req.body.description,
+      services: req.body.services,
+      budget: req.body.budget,
+      timeline: req.body.timeline,
+      description: req.body.description,
     });
 
     await quote.save();
@@ -194,7 +271,7 @@ app.get('/allquote', async (req, res) => {
   res.send(quote);
 })
 
-app.post("/removequote",async(req,res)=>{
+app.post("/removequote", async (req, res) => {
   try {
     await Quote.findOneAndDelete({
       id: req.body.id
