@@ -2,8 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
-
+const cors = require("cors");
 const app = express();
+
+app.use(cors({
+  origin: "*",  // Allow all origins OR use Netlify domain instead of "*"
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 const PORT = 5000;
 
