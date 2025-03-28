@@ -6,7 +6,7 @@ const GetQuote = () => {
   const [allQuote, setAllQuote] = useState([]);
 
   const fetchInfo = async () => {
-    await fetch("https://devionxwebsitebackend.onrender.com/allquote",{mode : "no-cors"})
+    await fetch("https://devionxwebsitebackend.onrender.com/allquote")
       .then((resp) => resp.json())
       .then((data) => {
         setAllQuote(data);
