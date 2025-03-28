@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "*",  // Allow all origins OR use Netlify domain instead of "*"
+  origin: "*", // Allow all origins OR use Netlify domain instead of "*"
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -39,64 +39,127 @@ const User = mongoose.model('user', {
   }
 })
 
+const verifyToken = (req, res, next) => {
+  const token = req.header('token');
+  if (!token) {
+    return res.status(401).send({
+      errors: "Please authenticate using valid token"
+    });
+  }
+  try {
+    const data = jwt.verify(token, 'secret_ecom');
+    req.user = data.user;
+    next();
+  } catch (error) {
+    res.status(401).send({
+      errors: "Please authenticate using valid token"
+    });
+  }
+};
+
 app.post('/signup', async (req, res) => {
   try {
-      const { name, email, password, conpassword } = req.body;
+    const {
+      name,
+      email,
+      password,
+      conpassword
+    } = req.body;
 
-      // Check if username exists
-      let check = await User.findOne({ email });
-      if (check) {
-          return res.status(400).json({ success: false, error: "Username already exists!" });
-      }
+    // Check if username exists
+    let check = await User.findOne({
+      email
+    });
+    if (check) {
+      return res.status(400).json({
+        success: false,
+        error: "Username already exists!"
+      });
+    }
 
-      // Check if passwords match
-      if (password !== conpassword) {
-          return res.status(400).json({ success: false, error: "Passwords do not match!" });
-      }
+    // Check if passwords match
+    if (password !== conpassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Passwords do not match!"
+      });
+    }
 
-      // Create new user
-      const user = new User({ name, email, password, con_password: conpassword });
-      await user.save();
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      password,
+      con_password: conpassword
+    });
+    await user.save();
 
-      // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, 'secret_ecom', { expiresIn: '1h' });
+    // Generate JWT token
+    const token = jwt.sign({
+      userId: user._id
+    }, 'secret_ecom', {
+      expiresIn: '1h'
+    });
 
-      res.json({ success: true, token });
+    res.json({
+      success: true,
+      token
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, error: "Server error" });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Server error"
+    });
   }
 });
 
 app.post('/login', async (req, res) => {
   let user = await User.findOne({
-      email: req.body.email
+    email: req.body.email
   });
   if (user) {
-      const passcompare = req.body.password === user.password;
-      if (passcompare) {
-          const data = {
-              user: {
-                  id: user.id
-              }
-          };
+    const passcompare = req.body.password === user.password;
+    if (passcompare) {
+      const data = {
+        user: {
+          id: user.id
+        }
+      };
 
-          const token = jwt.sign(data, 'secret_ecom');
-          res.json({
-              success: true,
-              token
-          });
-      } else {
-          res.json({
-              success: false,
-              errors: "Wrong password"
-          });
-      }
-  } else {
+      const token = jwt.sign(data, 'secret_ecom');
       res.json({
-          success: false,
-          errors: "Wrong email id"
+        success: true,
+        token
       });
+    } else {
+      res.json({
+        success: false,
+        errors: "Wrong password"
+      });
+    }
+  } else {
+    res.json({
+      success: false,
+      errors: "Wrong email id"
+    });
+  }
+});
+
+app.get("/peruser", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({
+      message: "Internal server error"
+    });
   }
 });
 
