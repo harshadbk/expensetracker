@@ -40,7 +40,6 @@
     font-size: 24px; /* Adjust the size as needed */
     font-family: var(--header-font);
     color: var(--text-color);
-    text-transform: uppercase;
     letter-spacing: 2px;
     flex-grow: 1;
     text-align: center;

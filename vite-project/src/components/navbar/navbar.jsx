@@ -14,7 +14,7 @@ const Navbar = () => {
       setUsername(localStorage.getItem('username'));
     };
 
-    window.addEventListener('storage', updateAuth); // Listen for localStorage changes
+    window.addEventListener('storage', updateAuth);
 
     return () => {
       window.removeEventListener('storage', updateAuth);
