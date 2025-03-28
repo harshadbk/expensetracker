@@ -33,7 +33,7 @@ const LoginForm = () => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("username",formData.email);
                 alert("Login successful!");
-                navigate("/dashboard");
+                navigate("/profile");
             } else {
                 setError(data.errors);
             }
