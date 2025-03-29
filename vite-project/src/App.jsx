@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/navbar/navbar';
 import Sidebar from './components/navbar/sidebar';
 import ListProduct from './components/listproduct/Listproduct';
@@ -26,7 +26,7 @@ const App = () => {
             <Route path="/listproduct" element={<ListProduct />} />
             <Route path='/login' element={<Login/>}></Route>
             <Route path='/signup' element={<Signup/>}></Route>
-            <Route path="/" element={<h1>Welcome to Devionx Admin Dashboard</h1>} />
+            <Route path="/" element={<Root/>} />
             <Route path='/profile' element={<Profile/>}></Route>
             <Route path='/dashboards' element={<Dashboards/>}></Route>
             <Route path='/income' element={<Income/>}></Route>
@@ -41,3 +41,12 @@ const App = () => {
 }
 
 export default App;
+
+const Root = ()=>{
+  const isAuthenticated = !!localStorage.getItem("token")
+  return isAuthenticated ? (
+    <Navigate to="/profile"/>
+  ):(
+    <Navigate to="/login"/>
+  )
+}

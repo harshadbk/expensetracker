@@ -9,7 +9,7 @@ const ListProduct = () => {
 
   const fetchInfo = async () => {
     try {
-      const response = await fetch("https://devionxwebsitebackend.onrender.com/gettouch");
+      const response = await fetch("https://devionx-expensetracker.onrender.com/gettouch");
       const data = await response.json();
       setAllTouch(data);
     } catch (error) {
@@ -28,7 +28,7 @@ const ListProduct = () => {
     if (!confirmDelete) return;
 
     try {
-      await fetch("http://127.0.0.1:5000/removetouch", {
+      await fetch("https://devionx-expensetracker.onrender.com/removetouch", {
         method: "POST",
         headers: {
           Accept: "application/json",

@@ -1,0 +1,160 @@
+
+.expenses-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 50px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Heading */
+.expense-heading {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 20px;
+    animation: slideInDown 0.5s ease-in-out;
+}
+
+/* Other styles remain unchanged */
+
+
+/* Form */
+.add-expense {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.expense {
+    height: 50px;
+    width: 200px;
+    font-size: large;
+    display: block;
+    margin: 20px auto;
+    margin-top: 0px;
+    padding: 10px 15px;
+    background: #c0392b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+}
+
+.expense:hover {
+    transform: scale(1.1);
+}
+
+.filters-expense {
+    display: flex;
+    height: 50px;
+    gap: 100px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+  
+.filters-expense input {
+    height: 40px;
+    width: 500px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 8px;
+    transition: border 0.3s ease-in-out;
+}
+  
+.filters-expense input:focus {
+    border-color: #c0392b;
+    outline: none;
+}
+  
+.filters-expense button {
+    height: 50px;
+    font-size: large;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background: #c0392b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+}
+  
+.filters-expense button:hover {
+    transform: scale(1.05);
+    background: #a93226;
+}
+
+.add-expense button:hover,
+.filters-expense button:hover {
+    transform: scale(1.1);
+}
+
+/* Balance */
+h3 {
+    text-align: center;
+    font-size: 20px;
+}
+
+.red-text {
+    color: #c0392b;
+    font-weight: bold;
+}
+
+/* Transactions */
+.expense-transactions {
+    margin-top: 20px;
+}
+
+.expense-transactions h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Transaction Table */
+.expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.expense-table th,
+.expense-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.expense-table th {
+    background: #c0392b;
+    color: white;
+}
+
+.expense-table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.expense-table tr:hover {
+    background: #ddd;
+}
+
+/* Expense Amount */
+.expense-amount {
+    font-weight: bold;
+    color: #c0392b;
+    display: flex;
+    align-items: center;
+}
+
+.expense-arrow {
+    margin-left: 5px;
+    color: #c0392b;
+}

@@ -6,7 +6,7 @@ const GetQuote = () => {
   const [allQuote, setAllQuote] = useState([]);
 
   const fetchInfo = async () => {
-    await fetch("https://devionxwebsitebackend.onrender.com/allquote")
+    await fetch("https://devionx-expensetracker.onrender.com/allquote")
       .then((resp) => resp.json())
       .then((data) => {
         setAllQuote(data);
@@ -18,7 +18,7 @@ const GetQuote = () => {
   }, []);
 
   const removeTouch = async (id) => {
-    await fetch("https://devionxwebsitebackend.onrender.com/removequote", {
+    await fetch("https://devionx-expensetracker.onrender.com/removequote", {
       method: "POST",
       headers: {
         Accept: "application/json",

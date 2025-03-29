@@ -94,7 +94,6 @@ app.post('/signup', async (req, res) => {
     });
     await user.save();
 
-    // Generate JWT token
     const token = jwt.sign({
       userId: user._id
     }, 'secret_ecom', {

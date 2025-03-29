@@ -1,0 +1,191 @@
+/* Income Container */
+.income-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 50px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.top {
+    color: #ddd;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+
+/* Heading */
+.heading {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 20px;
+    animation: slideInDown 0.5s ease-in-out;
+}
+
+/* Form */
+.add-income {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.income {
+    height: 50px;
+    width: 200px;
+    font-size: large;
+    display: block;
+    margin: 20px auto;
+    margin-top: 0px;
+    padding: 10px 15px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+}
+
+.income:hover {
+    transform: scale(1.1);
+}
+
+.filters {
+    display: flex;
+    height: 50px;
+    gap: 100px;
+    justify-content: center; /* Centers items horizontally */
+    align-items: center; /* Aligns items vertically */
+    margin: 20px 0; /* Adds spacing above and below */
+  }
+  
+  .filters input {
+    height: 40px;
+    width: 500px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 8px;
+    transition: border 0.3s ease-in-out;
+  }
+  
+  .filters input:focus {
+    border-color: #27ae60;
+    outline: none;
+  }
+  
+  .filters button {
+    height: 50px;
+    font-size: large;
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .filters button:hover {
+    transform: scale(1.05);
+    background: #219150;
+  }
+  
+
+.add-income button:hover,
+.filters button:hover {
+    transform: scale(1.1);
+}
+
+/* Balance */
+h3 {
+    text-align: center;
+    font-size: 20px;
+}
+
+.green-text {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+/* Transactions */
+.transactions {
+    margin-top: 20px;
+}
+
+.transactions h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Transaction Table */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.transaction-table th,
+.transaction-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.transaction-table th {
+    background: #2c3e50;
+    color: white;
+}
+
+.transaction-table tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.transaction-table tr:hover {
+    background: #ddd;
+}
+
+/* Income Amount */
+.income-amount {
+    font-weight: bold;
+    color: #27ae60;
+    display: flex;
+    align-items: center;
+}
+
+.income-arrow {
+    margin-left: 5px;
+    color: #27ae60;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

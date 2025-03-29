@@ -8,32 +8,35 @@ const Profile = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("https://devionxwebsitebackend.onrender.com/peruser", {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Log in to access your profile");
-      }
-
-      const result = await response.json();
-      setData(result);
-    } catch (error) {
-      setError("Log in to access your profile");
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://devionx-expensetracker.onrender.com/peruser", {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Log in to access your profile");
+        }
+
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        setError("Log in to access your profile");
+        console.error(error);
+      }
+    };
+
     fetchData();
   }, []);
 
+  const username = localStorage.getItem("username");
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
     navigate("/login");
   };
 
@@ -43,6 +46,13 @@ const Profile = () => {
 
   return (
     <div className="profile-container">
+      {/* Profile Heading */}
+      <div className="profile-heading">
+        <h1>Welcome, {username || "User"}!</h1>
+        <p>You're logged into the <strong>Devionx Admin Panel</strong>.</p>
+      </div>
+
+      {/* Profile Card */}
       <div className="profile-card">
         <img src={profileImage} alt="Profile" className="profile-image" />
 
@@ -52,19 +62,17 @@ const Profile = () => {
         <table className="profile-table">
           <tbody>
             <tr>
-              <td>Name:</td>
+              <td><strong>Name:</strong></td>
               <td>{data.name}</td>
             </tr>
             <tr>
-              <td>Email:</td>
+              <td><strong>Email:</strong></td>
               <td>{data.email}</td>
             </tr>
           </tbody>
         </table>
 
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
+        <button onClick={handleLogout} className="logout-button">Logout</button>
       </div>
     </div>
   );
