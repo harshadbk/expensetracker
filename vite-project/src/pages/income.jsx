@@ -16,7 +16,7 @@ const Income = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("http://localhost:5000/gettransactions");
+        const response = await fetch("https://devionx-expensetracker.onrender.com/gettransactions");
         const data = await response.json();
         if (data.success) {
           setTransactions(data.transactions);
@@ -44,7 +44,7 @@ const Income = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/addtransaction", {
+      const response = await fetch("https://devionx-expensetracker.onrender.com/addtransaction", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTransaction),

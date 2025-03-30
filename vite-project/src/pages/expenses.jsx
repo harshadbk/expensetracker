@@ -19,7 +19,7 @@ const Expenses = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch("http://localhost:5000/getdebit");
+      const response = await fetch("https://devionx-expensetracker.onrender.com/getdebit");
       const data = await response.json();
 
       if (data.success) {
@@ -48,7 +48,7 @@ const Expenses = () => {
         date: selectedDate,
       };
 
-      const response = await fetch("http://localhost:5000/addexpenses", {
+      const response = await fetch("https://devionx-expensetracker.onrender.com/addexpenses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTransaction),

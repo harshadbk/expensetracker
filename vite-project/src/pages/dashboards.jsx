@@ -9,7 +9,7 @@ const Dashboards = () => {
 
   const fetchBalance = async () => {
     try {
-      const response = await fetch("http://localhost:5000/total-balance");
+      const response = await fetch("https://devionx-expensetracker.onrender.com/total-balance");
       const data = await response.json();
       if (data.success) {
         setBalanceData({
