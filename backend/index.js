@@ -354,6 +354,155 @@ app.post("/removequote", async (req, res) => {
   }
 })
 
+const TransactionSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  payee: {
+    type: String,
+    required: true
+  },
+  amount: {
+    type: Number, // Changed from String to Number
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ["CREDIT", "DEBIT", "INVOICE"],
+    required: true
+  }
+});
+
+const Transaction = mongoose.model('Transaction', TransactionSchema);
+
+app.post('/addtransaction', async (req, res) => {
+  try {
+    const { id, payee, amount, description, date } = req.body;
+
+    const transaction = new Transaction({
+      id,
+      payee,
+      amount,
+      description,
+      date,
+      type: "CREDIT"
+    });
+
+    await transaction.save();
+
+    res.json({
+      success: true,
+      message: "Credit transaction added successfully",
+      transaction
+    });
+
+    console.log("Credit transaction added:", transaction);
+  } catch (error) {
+    console.error("Error adding credit transaction:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+})
+
+app.get("/gettransactions", async (req, res) => {
+  try {
+    const transactions = await Transaction.find({type:"CREDIT"});
+    res.json({ success: true, transactions });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
+app.post('/addexpenses', async (req, res) => {
+  try {
+    const { id, payee, amount, description, date } = req.body;
+
+    const transaction = new Transaction({
+      id,
+      payee,
+      amount,
+      description,
+      date,
+      type: "DEBIT"
+    });
+
+    await transaction.save();
+
+    res.json({
+      success: true,
+      message: "DEBIT transaction successfully",
+      transaction
+    });
+
+    console.log("DEBIT transaction added:", transaction);
+  } catch (error) {
+    console.error("Error adding DEBIT transaction:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+})
+
+app.get("/getdebit", async (req, res) => {
+  try {
+    const transactions = await Transaction.find({type:"DEBIT"});
+    res.json({ success: true, transactions });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get("/total-balance", async (req, res) => {
+  try {
+
+    const transactions = await Transaction.find({type:"CREDIT"});
+    const debit = await Transaction.find({type:"DEBIT"})
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+
+    transactions.forEach((transaction) => {
+      if (transaction.amount > 0) {
+        totalIncome += transaction.amount;
+      } else {
+        totalIncome = 0;
+      }
+    });
+
+    debit.forEach((transaction)=>{
+      if(transaction.amount > 0){
+        totalExpenses += transaction.amount;
+      }
+      else{
+        totalExpenses = 0;
+      }
+    })
+
+    res.json({
+      success: true,
+      totalIncome,
+      totalExpenses,
+      balance: totalIncome - totalExpenses,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('Server is running');
 });

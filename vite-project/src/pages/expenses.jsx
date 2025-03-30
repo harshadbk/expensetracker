@@ -4,45 +4,75 @@ import { FaArrowDown } from "react-icons/fa";
 
 const Expenses = () => {
   const [transactions, setTransactions] = useState([]);
-  const [name, setName] = useState("");  // Added Payee Name
+  const [name, setName] = useState("");
   const [debitAmount, setDebitAmount] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [balance, setBalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
-    const storedTransactions = JSON.parse(localStorage.getItem("expenses")) || [];
-    const storedBalance = JSON.parse(localStorage.getItem("balance")) || 0;
-    setTransactions(storedTransactions);
-    setBalance(storedBalance);
+    fetchExpenses();
   }, []);
 
-  const handleSubmit = () => {
-    if (!debitAmount || !description || !selectedDate) return;
+  const fetchExpenses = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/getdebit");
+      const data = await response.json();
 
-    const newTransaction = {
-      id: Date.now(),
-      payee: name.trim() || "NA",
-      amount: parseFloat(debitAmount),
-      description,
-      date: selectedDate, 
-    };
+      if (data.success) {
+        setTransactions(data.transactions);
+        const totalSpent = data.transactions.reduce((sum, tx) => sum + tx.amount, 0);
+        setBalance(-totalSpent); // Since expenses are debits
+      }
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
 
-    const updatedTransactions = [newTransaction, ...transactions];
-    const newBalance = balance - newTransaction.amount;
+  const handleSubmit = async () => {
+    if (!debitAmount || !description || !selectedDate) {
+      setPopupMessage("All fields are required!");
+      setTimeout(() => setPopupMessage(""), 2000);
+      return;
+    }
 
-    setTransactions(updatedTransactions);
-    setBalance(newBalance);
+    try {
+      const newTransaction = {
+        id:Date.now(),
+        payee: name.trim() || "NA",
+        amount: parseFloat(debitAmount),
+        description,
+        date: selectedDate,
+      };
 
-    localStorage.setItem("expenses", JSON.stringify(updatedTransactions));
-    localStorage.setItem("balance", JSON.stringify(newBalance));
+      const response = await fetch("http://localhost:5000/addexpenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTransaction),
+      });
 
-    setName("");
-    setDebitAmount("");
-    setDescription("");
-    setSelectedDate("");
+      const data = await response.json();
+
+      if (data.success) {
+        setTransactions([data.transaction, ...transactions]);
+        setBalance(balance - newTransaction.amount);
+
+        setPopupMessage("Expense added successfully!");
+        setTimeout(() => setPopupMessage(""), 2000);
+
+        setName("");
+        setDebitAmount("");
+        setDescription("");
+        setSelectedDate("");
+      }
+    } catch (error) {
+      console.error("Error adding expense:", error);
+      setPopupMessage("Failed to add expense!");
+      setTimeout(() => setPopupMessage(""), 2000);
+    }
   };
 
   const handleSearch = (event) => {
@@ -58,13 +88,13 @@ const Expenses = () => {
       return (
         tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tx.date.includes(searchTerm) ||
-        tx.id.toString().includes(searchTerm) ||
-        tx.payee.toLowerCase().includes(searchTerm.toLowerCase()) // Search by Payee Name
+        tx.payee.toLowerCase().includes(searchTerm.toLowerCase())
       );
     })
-    .sort((a, b) => (sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)));
+    .sort((a, b) =>
+      sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+    );
 
-  // Group transactions by month
   const groupedTransactions = {};
   filteredTransactions.forEach((transaction) => {
     const monthYear = new Date(transaction.date).toLocaleString("default", { month: "long", year: "numeric" });
@@ -77,10 +107,13 @@ const Expenses = () => {
   return (
     <div className="expenses-container">
       <div className="top">
-      <h1 className="heading">Expense Tracker</h1>
+        <h1 className="heading">Expense Tracker</h1>
       </div>
-      <h3>Total Balance: ₹<span className="red-text">{balance.toFixed(2)}</span></h3>
-      
+
+      {popupMessage && <div className="popup">{popupMessage}</div>}
+
+      <h3>Total Expenses: ₹<span className="red-text">{Math.abs(balance).toFixed(2)}</span></h3>
+
       <div className="add-expense">
         <input
           type="text"
@@ -106,11 +139,11 @@ const Expenses = () => {
           onChange={(e) => setSelectedDate(e.target.value)}
         />
       </div>
-      
+
       <button className="expense" onClick={handleSubmit}>Add Expense</button>
 
       <div className="filters">
-        <input type="text" placeholder="Search by ID, Date, Payee, or Description..." value={searchTerm} onChange={handleSearch} />
+        <input type="text" placeholder="Search by Payee, Date, or Description..." value={searchTerm} onChange={handleSearch} />
         <button onClick={handleSort}>Sort by Date ({sortOrder.toUpperCase()})</button>
       </div>
 
@@ -130,8 +163,8 @@ const Expenses = () => {
               </thead>
               <tbody>
                 {groupedTransactions[monthYear].map((tx) => (
-                  <tr key={tx.id}>
-                    <td>{tx.payee}</td>  {/* Display Payee Name */}
+                  <tr key={tx._id}>
+                    <td>{tx.payee}</td>
                     <td className="expense-amount">
                       ₹{tx.amount.toFixed(2)} <FaArrowDown className="expense-arrow" />
                     </td>

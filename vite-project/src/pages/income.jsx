@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from "react";
-import "./income.css";
 import { FaArrowUp } from "react-icons/fa";
+import "./income.css";
 
 const Income = () => {
   const [transactions, setTransactions] = useState([]);
-  const [name, setName] = useState("");  // Added Payee Name
+  const [name, setName] = useState("");
   const [creditAmount, setCreditAmount] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [balance, setBalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [popupMessage, setPopupMessage] = useState("");
 
   useEffect(() => {
-    const storedTransactions = JSON.parse(localStorage.getItem("transactions")) || [];
-    const storedBalance = JSON.parse(localStorage.getItem("balance")) || 0;
-    setTransactions(storedTransactions);
-    setBalance(storedBalance);
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/gettransactions");
+        const data = await response.json();
+        if (data.success) {
+          setTransactions(data.transactions);
+          const totalBalance = data.transactions.reduce((acc, tx) => acc + tx.amount, 0);
+          setBalance(totalBalance);
+        } else {
+          throw new Error("Failed to fetch transactions");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchTransactions();
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!creditAmount || !description || !selectedDate) return;
 
     const newTransaction = {
@@ -27,22 +40,40 @@ const Income = () => {
       payee: name.trim() || "NA",
       amount: parseFloat(creditAmount),
       description,
-      date: selectedDate, 
+      date: selectedDate,
     };
 
-    const updatedTransactions = [newTransaction, ...transactions];
-    const newBalance = balance + newTransaction.amount;
+    try {
+      const response = await fetch("http://localhost:5000/addtransaction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTransaction),
+      });
 
-    setTransactions(updatedTransactions);
-    setBalance(newBalance);
+      const data = await response.json();
+      if (data.success) {
+        setTransactions([data.transaction, ...transactions]);
+        setBalance(balance + newTransaction.amount);
+        
+        showPopup("Transaction added successfully!");
 
-    localStorage.setItem("transactions", JSON.stringify(updatedTransactions));
-    localStorage.setItem("balance", JSON.stringify(newBalance));
+        setName("");
+        setCreditAmount("");
+        setDescription("");
+        setSelectedDate("");
+      } else {
+        throw new Error("Failed to add transaction");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    setName("");
-    setCreditAmount("");
-    setDescription("");
-    setSelectedDate("");
+  const showPopup = (message) => {
+    setPopupMessage(message);
+    setTimeout(() => {
+      setPopupMessage("");
+    }, 3000);
   };
 
   const handleSearch = (event) => {
@@ -54,63 +85,40 @@ const Income = () => {
   };
 
   const filteredTransactions = transactions
-    .filter((tx) => {
-      return (
-        tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.date.includes(searchTerm) ||
-        tx.id.toString().includes(searchTerm) ||
-        tx.payee.toLowerCase().includes(searchTerm.toLowerCase()) // Search by Payee Name
-      );
-    })
+    .filter((tx) =>
+      [tx.description, tx.date, tx.id.toString(), tx.payee]
+        .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
     .sort((a, b) => (sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)));
 
-  // Group transactions by month
-  const groupedTransactions = {};
-  filteredTransactions.forEach((transaction) => {
-    const monthYear = new Date(transaction.date).toLocaleString("default", { month: "long", year: "numeric" });
-    if (!groupedTransactions[monthYear]) {
-      groupedTransactions[monthYear] = [];
-    }
-    groupedTransactions[monthYear].push(transaction);
-  });
+  const groupedTransactions = filteredTransactions.reduce((acc, tx) => {
+    const monthYear = new Date(tx.date).toLocaleString("default", { month: "long", year: "numeric" });
+    acc[monthYear] = acc[monthYear] || [];
+    acc[monthYear].push(tx);
+    return acc;
+  }, {});
 
   return (
     <div className="income-container">
+      {popupMessage && <div className="popup-message">{popupMessage}</div>} {/* Popup Message */}
+      
       <div className="top">
-      <h1 className="heading">Income Tracker</h1>
+        <h1 className="heading">Income Tracker</h1>
       </div>
-      <h3>Total Balance: ₹<span className="green-text">{balance.toFixed(2)}</span></h3>
-      
+
+      <h3>Total Income: ₹<span className="green-text">{balance.toFixed(2)}</span></h3>
+
       <div className="add-income">
-        <input
-          type="text"
-          placeholder="Name of Payee"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Credit Amount"
-          value={creditAmount}
-          onChange={(e) => setCreditAmount(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-        />
+        <input type="text" placeholder="Name of Payee" value={name} onChange={(e) => setName(e.target.value)} />
+        <input type="number" placeholder="Credit Amount" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} />
+        <input type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
       </div>
-      
+
       <button className="income" onClick={handleSubmit}>Add Income</button>
 
       <div className="filters">
-        <input type="text" placeholder="Search by ID, Date, Payee, or Description..." value={searchTerm} onChange={handleSearch} />
+        <input type="text" placeholder="Search transactions..." value={searchTerm} onChange={handleSearch} />
         <button onClick={handleSort}>Sort by Date ({sortOrder.toUpperCase()})</button>
       </div>
 
@@ -131,7 +139,7 @@ const Income = () => {
               <tbody>
                 {groupedTransactions[monthYear].map((tx) => (
                   <tr key={tx.id}>
-                    <td>{tx.payee}</td>  {/* Display Payee Name */}
+                    <td>{tx.payee}</td>
                     <td className="income-amount">
                       ₹{tx.amount.toFixed(2)} <FaArrowUp className="income-arrow" />
                     </td>
