@@ -111,10 +111,9 @@ const Expenses = () => {
   return (
     <div className="expenses-container">
       <div className="top">
+      {popupMessage && <div className="popup-message">{popupMessage}</div>}
         <h1 className="heading">Expense Tracker</h1>
       </div>
-
-      {popupMessage && <div className="popup">{popupMessage}</div>}
 
       <h3>Total Expenses: ₹<span className="red-text">{Math.abs(balance).toFixed(2)}</span></h3>
 
@@ -169,6 +168,7 @@ const Expenses = () => {
                   <th>Payee</th>
                   <th>Amount</th>
                   <th>Description</th>
+                  <th>Payment Type</th>
                   <th>Date</th>
                   <th>Transaction ID</th>
                 </tr>
@@ -181,6 +181,7 @@ const Expenses = () => {
                       ₹{tx.amount.toFixed(2)} <FaArrowDown className="expense-arrow" />
                     </td>
                     <td>{tx.description}</td>
+                    <td>{tx.paymentType}</td>
                     <td>{new Date(tx.date).toLocaleDateString()}</td>
                     <td>{tx.id}</td>
                   </tr>

@@ -570,6 +570,119 @@ app.get("/transactions-by-payment", async (req, res) => {
   }
 });
 
+const InvoiceSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  payee: {
+    type: String,
+    required: true
+  },
+  totalAmount: {
+    type: Number,
+    required: true
+  },
+  amountPaid: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+
+  remainingAmount: {
+    type: Number,
+    required: true,
+    default: function () {
+      return this.totalAmount - this.amountPaid;
+    }
+  },
+
+  description: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  paymentType: {
+    type: String,
+    required: true
+  }
+});
+
+InvoiceSchema.pre('save', function (next) {
+  this.remainingAmount = this.totalAmount - this.amountPaid;
+  next();
+});
+
+const Invoices = mongoose.model("Invoices", InvoiceSchema);
+app.post("/addinvoice", async (req, res) => {
+  try {
+    const {
+      payee,
+      totalAmount,
+      amountPaid,
+      description,
+      date,
+      paymentType,
+    } = req.body;
+
+    if (!payee || !totalAmount || !amountPaid || !description || !date || !paymentType) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const remainingAmount = totalAmount - amountPaid;
+
+    // ✅ Correcting the ID generation
+    const generateInvoiceId = async () => {
+      const lastInvoice = await Invoices.findOne().sort({ id: -1 });
+      return lastInvoice ? lastInvoice.id + 1 : 1;
+    };
+
+    const newId = await generateInvoiceId(); // ✅ Call the function to get the ID
+
+    const invoice = new Invoices({
+      id: newId, // ✅ Assign the generated ID
+      payee,
+      totalAmount,
+      amountPaid,
+      remainingAmount,
+      description,
+      date,
+      paymentType,
+    });
+
+    await invoice.save();
+
+    res.json({
+      success: true,
+      message: "Invoice added successfully",
+      invoice,
+    });
+  } catch (error) {
+    console.error("Error adding invoice:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+app.get("/getinvoices", async (req, res) => {
+  try {
+    const invoices = await Invoices.find();
+    res.json({ success: true, invoices });
+  } catch (error) {
+    console.error("Error fetching invoices:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 app.get('/', (req, res) => {
   res.send('Server is running');
 });

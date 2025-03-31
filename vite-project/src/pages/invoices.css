@@ -1,0 +1,357 @@
+/* General Styling */
+.invoices-container {
+    max-width: 1100px;
+    margin: auto;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Animated Heading */
+.animated-heading {
+    font-size: 28px;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 20px;
+    animation: slideDown 1s ease-in-out;
+}
+
+.upperpart {
+    margin-left: 0px;
+    gap: 20px;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+}
+
+/* Form Section */
+.add-invoice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Align content to the left */
+    justify-content: center;
+    text-align: center;
+    /* Align text to the left */
+    max-width: 600px;
+    width: 100%;
+    background: gainsboro;
+    padding: 20px;
+    border-radius: 40px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px 0 20px 30px;
+    /* Moves it towards the left */
+    animation: slideUp 1s ease-in-out;
+    transform-origin: left;
+    transition: transform 0.5s ease-in-out;
+}
+
+
+.add-invoice:hover {
+    transform: scale(1.01);
+}
+
+/* Input Row */
+.input-row {
+    width: 500px;
+    height: 70px;
+    gap: 30px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.input-row input {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-row select {
+    margin-top: 10px;
+    width: 70%;
+    height: 50px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.input-row input:focus,
+.input-row select:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Add Invoice Button */
+.add-invoice-btn {
+    width: 200px;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.add-invoice-btn:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0px 15px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.invoice-table thead {
+    background: linear-gradient(to right, #4CAF50, #2E8B57);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.invoice-table th,
+.invoice-table td {
+    padding: 12px 15px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.invoice-table tbody tr {
+    background: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.5s ease-in-out forwards;
+    opacity: 0;
+}
+
+.invoice-table tbody tr:hover {
+    background: rgba(76, 175, 80, 0.1);
+    transform: scale(1.02);
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.invoice-table th {
+    border-bottom: 3px solid #2E8B57;
+}
+
+.invoice-table .amount-paid {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.invoice-table .remaining-amount {
+    color: red;
+    font-weight: bold;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    /* Blue color */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    transform: scale(1.05);
+    /* Slightly enlarge on hover */
+    box-shadow: 0px 6px 10px rgba(0, 123, 255, 0.5);
+}
+
+.edit-btn:active {
+    transform: scale(0.95);
+    /* Slightly shrink when clicked */
+    box-shadow: 0px 2px 5px rgba(0, 123, 255, 0.5);
+}
+
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.popup-message {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px);
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+.filter {
+    background: gainsboro;
+    width: 40%;
+    height: 350px;
+    padding: 10px;
+    border-radius: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center; 
+    align-items: center;
+  }
+  
+  .filter p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+  }
+  
+  .filter input{
+    padding: 8px 12px;
+    flex-direction: row;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 40px;
+    width: 150px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .filter select {
+    align-items: center;
+    padding: 8px 12px;
+    flex-direction: row;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 50px;
+    width: 355px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .filter input:focus,
+  .filter select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  }
+  
+  .filter select {
+    background: white;
+    cursor: pointer;
+  }
+  
+  .filter input[type="date"] {
+    cursor: pointer;
+  }
+.afilter-btn{
+    width: 150px;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.afilter-btn:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
