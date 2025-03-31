@@ -82,7 +82,7 @@ const styles = {
     fontWeight: "bold",
   },
   balance: {
-    color: "#333",
+    color: "green",
     fontSize: "22px",
     fontWeight: "bold",
   },

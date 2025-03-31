@@ -8,6 +8,7 @@ const Income = () => {
   const [creditAmount, setCreditAmount] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [paymentType, setPaymentType] = useState("");
   const [balance, setBalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -33,7 +34,10 @@ const Income = () => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!creditAmount || !description || !selectedDate) return;
+    if (!creditAmount || !description || !selectedDate || !paymentType) {
+      showPopup("All fields including Payment Type are required!");
+      return;
+    }
 
     const newTransaction = {
       id: Date.now(),
@@ -41,6 +45,7 @@ const Income = () => {
       amount: parseFloat(creditAmount),
       description,
       date: selectedDate,
+      paymentType,
     };
 
     try {
@@ -54,13 +59,14 @@ const Income = () => {
       if (data.success) {
         setTransactions([data.transaction, ...transactions]);
         setBalance(balance + newTransaction.amount);
-        
+
         showPopup("Transaction added successfully!");
 
         setName("");
         setCreditAmount("");
         setDescription("");
         setSelectedDate("");
+        setPaymentType("");
       } else {
         throw new Error("Failed to add transaction");
       }
@@ -86,7 +92,7 @@ const Income = () => {
 
   const filteredTransactions = transactions
     .filter((tx) =>
-      [tx.description, tx.date, tx.id.toString(), tx.payee]
+      [tx.description, tx.date, tx.id.toString(), tx.payee, tx.paymentType]
         .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => (sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)));
@@ -100,8 +106,8 @@ const Income = () => {
 
   return (
     <div className="income-container">
-      {popupMessage && <div className="popup-message">{popupMessage}</div>} {/* Popup Message */}
-      
+      {popupMessage && <div className="popup-message">{popupMessage}</div>}
+
       <div className="top">
         <h1 className="heading">Income Tracker</h1>
       </div>
@@ -113,6 +119,15 @@ const Income = () => {
         <input type="number" placeholder="Credit Amount" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} />
         <input type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
         <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
+
+        <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} required>
+          <option value="" disabled>Payment Type</option>
+          <option value="Cash">Cash</option>
+          <option value="Online Payment">Online Payment</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="UPI">UPI</option>
+          <option value="Cheque">Cheque</option>
+        </select>
       </div>
 
       <button className="income" onClick={handleSubmit}>Add Income</button>
@@ -132,6 +147,7 @@ const Income = () => {
                   <th>Payee</th>
                   <th>Amount</th>
                   <th>Description</th>
+                  <th>Payment Type</th>
                   <th>Date</th>
                   <th>Transaction ID</th>
                 </tr>
@@ -144,6 +160,7 @@ const Income = () => {
                       ₹{tx.amount.toFixed(2)} <FaArrowUp className="income-arrow" />
                     </td>
                     <td>{tx.description}</td>
+                    <td>{tx.paymentType}</td>
                     <td>{new Date(tx.date).toLocaleDateString()}</td>
                     <td>{tx.id}</td>
                   </tr>

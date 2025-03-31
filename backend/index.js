@@ -358,36 +358,54 @@ const TransactionSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
-    unique: true
+    unique: true,
   },
   payee: {
     type: String,
-    required: true
+    required: true,
   },
   amount: {
-    type: Number, // Changed from String to Number
-    required: true
+    type: Number,
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: Date,
-    required: true
+    required: true,
   },
   type: {
     type: String,
-    enum: ["CREDIT", "DEBIT", "INVOICE"],
-    required: true
-  }
+    enum: ["CREDIT", "DEBIT"],
+    required: true,
+  },
+  paymentType: {
+    type: String,
+    required: true,
+  },
 });
 
-const Transaction = mongoose.model('Transaction', TransactionSchema);
+const Transaction = mongoose.model("Transaction", TransactionSchema);
 
-app.post('/addtransaction', async (req, res) => {
+app.post("/addtransaction", async (req, res) => {
   try {
-    const { id, payee, amount, description, date } = req.body;
+    const {
+      id,
+      payee,
+      amount,
+      description,
+      date,
+      paymentType
+    } = req.body;
+
+    if (!id || !payee || !amount || !description || !date || !paymentType) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required!"
+      });
+    }
 
     const transaction = new Transaction({
       id,
@@ -395,7 +413,8 @@ app.post('/addtransaction', async (req, res) => {
       amount,
       description,
       date,
-      type: "CREDIT"
+      type: "CREDIT",
+      paymentType,
     });
 
     await transaction.save();
@@ -403,7 +422,7 @@ app.post('/addtransaction', async (req, res) => {
     res.json({
       success: true,
       message: "Credit transaction added successfully",
-      transaction
+      transaction,
     });
 
     console.log("Credit transaction added:", transaction);
@@ -411,24 +430,45 @@ app.post('/addtransaction', async (req, res) => {
     console.error("Error adding credit transaction:", error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
-  }
-})
-
-app.get("/gettransactions", async (req, res) => {
-  try {
-    const transactions = await Transaction.find({type:"CREDIT"});
-    res.json({ success: true, transactions });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-
-app.post('/addexpenses', async (req, res) => {
+app.get("/gettransactions", async (req, res) => {
   try {
-    const { id, payee, amount, description, date } = req.body;
+    const transactions = await Transaction.find({
+      type: "CREDIT"
+    });
+    res.json({
+      success: true,
+      transactions
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.post("/addexpenses", async (req, res) => {
+  try {
+    const {
+      id,
+      payee,
+      amount,
+      description,
+      date,
+      paymentType
+    } = req.body;
+
+    if (!id || !payee || !amount || !description || !date || !paymentType) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required!"
+      });
+    }
 
     const transaction = new Transaction({
       id,
@@ -436,61 +476,56 @@ app.post('/addexpenses', async (req, res) => {
       amount,
       description,
       date,
-      type: "DEBIT"
+      type: "DEBIT",
+      paymentType,
     });
 
     await transaction.save();
 
     res.json({
       success: true,
-      message: "DEBIT transaction successfully",
-      transaction
+      message: "Debit transaction added successfully",
+      transaction,
     });
 
-    console.log("DEBIT transaction added:", transaction);
+    console.log("Debit transaction added:", transaction);
   } catch (error) {
-    console.error("Error adding DEBIT transaction:", error);
+    console.error("Error adding debit transaction:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+app.get("/getdebit", async (req, res) => {
+  try {
+    const transactions = await Transaction.find({
+      type: "DEBIT"
+    });
+    res.json({
+      success: true,
+      transactions
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       error: error.message
     });
   }
-})
-
-app.get("/getdebit", async (req, res) => {
-  try {
-    const transactions = await Transaction.find({type:"DEBIT"});
-    res.json({ success: true, transactions });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
 });
 
 app.get("/total-balance", async (req, res) => {
   try {
-
-    const transactions = await Transaction.find({type:"CREDIT"});
-    const debit = await Transaction.find({type:"DEBIT"})
-
-    let totalIncome = 0;
-    let totalExpenses = 0;
-
-    transactions.forEach((transaction) => {
-      if (transaction.amount > 0) {
-        totalIncome += transaction.amount;
-      } else {
-        totalIncome = 0;
-      }
+    const credits = await Transaction.find({
+      type: "CREDIT"
+    });
+    const debits = await Transaction.find({
+      type: "DEBIT"
     });
 
-    debit.forEach((transaction)=>{
-      if(transaction.amount > 0){
-        totalExpenses += transaction.amount;
-      }
-      else{
-        totalExpenses = 0;
-      }
-    })
+    let totalIncome = credits.reduce((sum, tx) => sum + tx.amount, 0);
+    let totalExpenses = debits.reduce((sum, tx) => sum + tx.amount, 0);
 
     res.json({
       success: true,
@@ -499,7 +534,39 @@ app.get("/total-balance", async (req, res) => {
       balance: totalIncome - totalExpenses,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error", error });
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error
+    });
+  }
+});
+
+app.get("/transactions-by-payment", async (req, res) => {
+  try {
+    const {
+      paymentType
+    } = req.query;
+
+    if (!paymentType) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment type is required"
+      });
+    }
+
+    const transactions = await Transaction.find({
+      paymentType
+    });
+    res.json({
+      success: true,
+      transactions
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 });
 

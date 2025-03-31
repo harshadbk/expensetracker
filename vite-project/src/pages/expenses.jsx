@@ -8,6 +8,7 @@ const Expenses = () => {
   const [debitAmount, setDebitAmount] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [paymentType, setPaymentType] = useState("");
   const [balance, setBalance] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -46,6 +47,7 @@ const Expenses = () => {
         amount: parseFloat(debitAmount),
         description,
         date: selectedDate,
+        paymentType,
       };
 
       const response = await fetch("https://devionx-expensetracker.onrender.com/addexpenses", {
@@ -67,6 +69,7 @@ const Expenses = () => {
         setDebitAmount("");
         setDescription("");
         setSelectedDate("");
+        setPaymentType("");
       }
     } catch (error) {
       console.error("Error adding expense:", error);
@@ -88,7 +91,8 @@ const Expenses = () => {
       return (
         tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tx.date.includes(searchTerm) ||
-        tx.payee.toLowerCase().includes(searchTerm.toLowerCase())
+        tx.payee.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tx.paymentType
       );
     })
     .sort((a, b) =>
@@ -138,6 +142,14 @@ const Expenses = () => {
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
         />
+          <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)}>
+          <option value="">Payment Type</option>
+          <option value="Cash">Cash</option>
+          <option value="Online Payment">Online Payment</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="UPI">UPI</option>
+          <option value="Cheque">Cheque</option>
+        </select>
       </div>
 
       <button className="expense" onClick={handleSubmit}>Add Expense</button>
