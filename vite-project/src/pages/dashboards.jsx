@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import './dashboard.css';
 
 const Dashboards = () => {
   const [balanceData, setBalanceData] = useState({
@@ -28,64 +29,37 @@ const Dashboards = () => {
   }, []);
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Dashboard</h2>
-      <div style={styles.cardContainer}>
-        <div style={styles.card}>
+    <>
+    <div className="maincont">
+      <div className="row-1">
+          <div className="bargraph">
+          </div>
+      </div>
+      
+    </div>
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">Dashboard</h2>
+      <div className="card-container">
+        <div className="card">
           <h3>Total Income</h3>
-          <p style={styles.income}>₹{balanceData.totalIncome}</p>
+          <p className="incomes">₹{balanceData.totalIncome}</p>
         </div>
-        <div style={styles.card}>
+        <div className="card">
+          <h3>Income By Invoices</h3>
+          <p className="invoices">₹{balanceData.totalIncome}</p>
+        </div>
+        <div className="card">
           <h3>Total Expenses</h3>
-          <p style={styles.expense}>₹{balanceData.totalExpenses}</p>
+          <p className="expenses">₹{balanceData.totalExpenses}</p>
         </div>
-        <div style={styles.card}>
+        <div className="card">
           <h3>Balance</h3>
-          <p style={styles.balance}>₹{balanceData.balance}</p>
+          <p className="balance">₹{balanceData.balance}</p>
         </div>
       </div>
     </div>
+    </>
   );
-};
-
-const styles = {
-  container: {
-    textAlign: "center",
-    padding: "20px",
-  },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "20px",
-  },
-  cardContainer: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "20px",
-  },
-  card: {
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-    width: "200px",
-    textAlign: "center",
-    backgroundColor: "#fff",
-  },
-  income: {
-    color: "green",
-    fontSize: "20px",
-    fontWeight: "bold",
-  },
-  expense: {
-    color: "red",
-    fontSize: "20px",
-    fontWeight: "bold",
-  },
-  balance: {
-    color: "green",
-    fontSize: "22px",
-    fontWeight: "bold",
-  },
 };
 
 export default Dashboards;

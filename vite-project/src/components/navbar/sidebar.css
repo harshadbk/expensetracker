@@ -9,6 +9,7 @@
     background-color:orange;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+    position: fixed;
   }
 
   .sidebar-item {
