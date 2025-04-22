@@ -13,7 +13,6 @@ const Invoices = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
-  // ✅ Filters state
   const [filterDate, setFilterDate] = useState("");
   const [filterId, setFilterId] = useState("");
   const [filterPayee, setFilterPayee] = useState("");
@@ -85,7 +84,7 @@ const Invoices = () => {
 
         setPopupMessage("✅ Invoice added successfully!");
         setShowPopup(true);
-        setTimeout(() => setShowPopup(false), 3000);
+        setTimeout(() => setShowPopup(false), 4000);
       } else {
         throw new Error("Failed to add invoice");
       }
@@ -97,7 +96,6 @@ const Invoices = () => {
     }
   };
 
-  // ✅ Function to filter invoices
   const handleFilter = () => {
     let filteredData = invoices.filter((invoice) => {
       return (
@@ -175,7 +173,6 @@ const Invoices = () => {
         </div>
       </div>
 
-      {/* ✅ Filtered Invoice Table */}
       <table className="invoice-table">
         <thead>
           <tr>

@@ -638,16 +638,15 @@ app.post("/addinvoice", async (req, res) => {
 
     const remainingAmount = totalAmount - amountPaid;
 
-    // ✅ Correcting the ID generation
     const generateInvoiceId = async () => {
       const lastInvoice = await Invoices.findOne().sort({ id: -1 });
       return lastInvoice ? lastInvoice.id + 1 : 1;
     };
 
-    const newId = await generateInvoiceId(); // ✅ Call the function to get the ID
+    const newId = await generateInvoiceId();
 
     const invoice = new Invoices({
-      id: newId, // ✅ Assign the generated ID
+      id: newId,
       payee,
       totalAmount,
       amountPaid,
