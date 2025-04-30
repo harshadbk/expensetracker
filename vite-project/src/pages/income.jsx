@@ -13,11 +13,24 @@ const Income = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [popupMessage, setPopupMessage] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsAuthenticated(false);
+      showPopup("Please log in to access the system!");
+      return;
+    }
+
     const fetchTransactions = async () => {
       try {
-        const response = await fetch("https://devionx-expensetracker.onrender.com/gettransactions");
+        const response = await fetch("https://devionx-expensetracker.onrender.com/gettransactions", {
+          headers: {
+            "auth-token": token
+          }
+        });
         const data = await response.json();
         if (data.success) {
           setTransactions(data.transactions);
@@ -30,6 +43,7 @@ const Income = () => {
         console.error(err);
       }
     };
+
     fetchTransactions();
   }, []);
 
@@ -49,9 +63,13 @@ const Income = () => {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("https://devionx-expensetracker.onrender.com/addtransaction", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token
+        },
         body: JSON.stringify(newTransaction),
       });
 
@@ -59,7 +77,6 @@ const Income = () => {
       if (data.success) {
         setTransactions([data.transaction, ...transactions]);
         setBalance(balance + newTransaction.amount);
-
         showPopup("Transaction added successfully!");
 
         setName("");
@@ -103,6 +120,15 @@ const Income = () => {
     acc[monthYear].push(tx);
     return acc;
   }, {});
+
+  if (!isAuthenticated) {
+    return (
+      <div className="income-container">
+        {popupMessage && <div className="popup-message">{popupMessage}</div>}
+        <h2 className="error">Please log in to access the income tracker.</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="income-container">

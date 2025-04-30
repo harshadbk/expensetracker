@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import './dashboard.css';
+import Comparisons from "./comparison.jsx";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, LineChart
 } from 'recharts';
 
 const COLORS = ['#FF8C00', '#8B4513', '#2ECC71', '#3498DB', '#9B59B6', '#E74C3C'];
-
 const COLORS2 = ['#FF6F61', '#6B5B95', '#88B04B', '#F7CAC9', '#92A8D1', '#955251'];
 
 
@@ -25,6 +25,26 @@ const Dashboards = () => {
   const [selectedYear, setSelectedYear] = useState("");
   const [availableYears, setAvailableYears] = useState([]);
   const [paymentTypeData, setPaymentTypeData] = useState([]);
+
+
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsAuthenticated(false);
+      showPopup("Please log in to access the system!");
+      return;
+    }
+  })
+
+  const showPopup = (message) => {
+    setPopupMessage(message);
+    setTimeout(() => {
+    }, 3000);
+  };
 
   const fetchBalance = async () => {
     try {
@@ -190,7 +210,79 @@ const Dashboards = () => {
     fetchDebitTransactions();
   }, []);
 
-  // for comparison
+  // for invoices
+
+  const [invoices, setInvoices] = useState([]);
+  const [monthlyInvoiceData, setMonthlyInvoiceData] = useState([]);
+  const [selectedYear2, setSelectedYear2] = useState("");
+  const [availableYears2, setAvailableYears2] = useState([]);
+  const [paymentTypeData2, setPaymentTypeData2] = useState([]);
+
+  useEffect(() => {
+    fetchBalance();
+    fetchInvoices();
+  }, []);
+
+  const fetchInvoices = async () => {
+    try {
+      const res = await fetch("https://devionx-expensetracker.onrender.com/getinvoices");
+      const data = await res.json();
+
+      if (data.success) {
+        const fetchedInvoices = data.invoices;
+        setInvoices(fetchedInvoices);
+
+        const years = Array.from(new Set(fetchedInvoices.map(txn =>
+          new Date(txn.date).getFullYear()))).sort((a, b) => b - a);
+
+        const currentYear = new Date().getFullYear();
+
+        setAvailableYears2(years);
+        setSelectedYear2(currentYear);
+
+        generateMonthlyInvoices(fetchedInvoices, currentYear);
+        generatePaymentTypeData2(fetchedInvoices);
+      }
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+    }
+  };
+
+  const generateMonthlyInvoices = (transactions, year) => {
+    const map = {};
+
+    transactions.forEach((txn) => {
+      const date = new Date(txn.date);
+      if (date.getFullYear() === parseInt(year)) {
+        const label = `${date.toLocaleString("default", { month: "short" })} ${year}`;
+        map[label] = (map[label] || 0) + txn.totalAmount;
+      }
+    });
+
+    const result = Object.entries(map).map(([monthYear, amount]) => {
+      const [month, yearStr] = monthYear.split(" ");
+      const sortKey = new Date(`${month} 1, ${yearStr}`).getTime();
+      return { month: monthYear, Invoice: amount, sortKey };
+    }).sort((a, b) => a.sortKey - b.sortKey);
+
+    setMonthlyInvoiceData(result);
+  };
+
+  const generatePaymentTypeData2 = (transactions) => {
+    const typeMap = {};
+
+    transactions.forEach((txn) => {
+      const type = txn.paymentType || "Unknown";
+      typeMap[type] = (typeMap[type] || 0) + txn.totalAmount;
+    });
+
+    const result = Object.entries(typeMap).map(([type, amount]) => ({
+      name: type,
+      value: amount,
+    }));
+
+    setPaymentTypeData2(result);
+  };
 
   useEffect(() => {
     const income = balanceData.totalIncome || 0;
@@ -206,13 +298,20 @@ const Dashboards = () => {
     ]);
   }, [balanceData, transactions]);
 
+  if (!isAuthenticated) {
+    return (
+      <div className="income-container">
+        {popupMessage && <div className="popup-message">{popupMessage}</div>}
+        <h2 className="error">Please log in to access the Dashboard.</h2>
+      </div>
+    );
+  }
+
 
   return (
     <>
       <div className="maincont">
-
-        {/* for income summary */}
-
+        {popupMessage && <div className="popup-message">{popupMessage}</div>}
         <h2 className="myheader">Income Summary</h2>
         <div className="row-1">
           <div className="bargraph">
@@ -388,6 +487,88 @@ const Dashboards = () => {
           </ResponsiveContainer>
         </div>
 
+        <br />
+        <br />
+
+        {/* invoice summary */}
+
+        <h2 className="myheader2">Invoices Summary</h2>
+
+        <div className="row-1">
+          {/* Bar Chart Section */}
+          <div className="bargraph">
+            <div className="bargraph-header">
+              <h3 className="bargraph-heading">Invoices Per Month</h3>
+              <div className="year-select-container">
+                <label htmlFor="year-select" className="year-label">Select Year:</label>
+                <select
+                  id="year-select"
+                  value={selectedYear2}
+                  onChange={(e) => {
+                    setSelectedYear2(e.target.value);
+                    generateMonthlyInvoices(invoices, e.target.value);
+                  }}
+                  className="year-dropdown"
+                >
+                  {availableYears2.map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart
+                data={monthlyInvoiceData}
+                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="month"
+                  height={60}
+                  style={{ fontSize: 10 }}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                />
+                <YAxis style={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar
+                  dataKey="Invoice"
+                  animationDuration={1000}
+                  barSize={25}
+                  activeBar={{ fill: "#6C5CE7" }}
+                  fill="#00B894"
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Pie Chart Section */}
+          <div className="circle">
+            <h3>Payment Type Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={paymentTypeData2}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label
+                >
+                  {paymentTypeData2.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS2[index % COLORS2.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <Comparisons/>
       </div>
 
       <div className="dashboard-container">

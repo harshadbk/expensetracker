@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "./expenses.css";
 import { FaArrowDown } from "react-icons/fa";
+import "./expenses.css";
 
 const Expenses = () => {
   const [transactions, setTransactions] = useState([]);
@@ -13,68 +13,86 @@ const Expenses = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("desc");
   const [popupMessage, setPopupMessage] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   useEffect(() => {
-    fetchExpenses();
-  }, []);
+    const token = localStorage.getItem("token");
 
-  const fetchExpenses = async () => {
-    try {
-      const response = await fetch("https://devionx-expensetracker.onrender.com/getdebit");
-      const data = await response.json();
-
-      if (data.success) {
-        setTransactions(data.transactions);
-        const totalSpent = data.transactions.reduce((sum, tx) => sum + tx.amount, 0);
-        setBalance(-totalSpent); // Since expenses are debits
-      }
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!debitAmount || !description || !selectedDate) {
-      setPopupMessage("All fields are required!");
-      setTimeout(() => setPopupMessage(""), 2000);
+    if (!token) {
+      setIsAuthenticated(false);
+      showPopup("Please log in to access the system!");
       return;
     }
 
-    try {
-      const newTransaction = {
-        id:Date.now(),
-        payee: name.trim() || "NA",
-        amount: parseFloat(debitAmount),
-        description,
-        date: selectedDate,
-        paymentType,
-      };
+    const fetchExpenses = async () => {
+      try {
+        const response = await fetch("https://devionx-expensetracker.onrender.com/getdebit", {
+          headers: {
+            "auth-token": token,
+          },
+        });
+        const data = await response.json();
+        if (data.success) {
+          setTransactions(data.transactions);
+          const total = data.transactions.reduce((sum, tx) => sum + tx.amount, 0);
+          setBalance(-total);
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        showPopup("Failed to load expenses!");
+      }
+    };
 
+    fetchExpenses();
+  }, []);
+
+  const showPopup = (message) => {
+    setPopupMessage(message);
+    setTimeout(() => setPopupMessage(""), 3000);
+  };
+
+  const handleSubmit = async () => {
+    if (!debitAmount || !description || !selectedDate || !paymentType) {
+      showPopup("All fields including Payment Type are required!");
+      return;
+    }
+
+    const newTransaction = {
+      id: Date.now(),
+      payee: name.trim() || "NA",
+      amount: parseFloat(debitAmount),
+      description,
+      date: selectedDate,
+      paymentType,
+    };
+
+    try {
+      const token = localStorage.getItem("token");
       const response = await fetch("https://devionx-expensetracker.onrender.com/addexpenses", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
         body: JSON.stringify(newTransaction),
       });
 
       const data = await response.json();
-
       if (data.success) {
         setTransactions([data.transaction, ...transactions]);
         setBalance(balance - newTransaction.amount);
-
-        setPopupMessage("Expense added successfully!");
-        setTimeout(() => setPopupMessage(""), 2000);
-
+        showPopup("Expense added successfully!");
         setName("");
         setDebitAmount("");
         setDescription("");
         setSelectedDate("");
         setPaymentType("");
+      } else {
+        throw new Error("Failed to add expense");
       }
-    } catch (error) {
-      console.error("Error adding expense:", error);
-      setPopupMessage("Failed to add expense!");
-      setTimeout(() => setPopupMessage(""), 2000);
+    } catch (err) {
+      console.error("Error adding expense:", err);
+      showPopup("Failed to add expense!");
     }
   };
 
@@ -87,35 +105,39 @@ const Expenses = () => {
   };
 
   const filteredTransactions = transactions
-    .filter((tx) => {
-      return (
-        tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.date.includes(searchTerm) ||
-        tx.payee.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tx.paymentType
-      );
-    })
+    .filter((tx) =>
+      [tx.description, tx.date, tx.id?.toString(), tx.payee, tx.paymentType]
+        .some((field) => field.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
     .sort((a, b) =>
-      sortOrder === "asc" ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+      sortOrder === "asc"
+        ? new Date(a.date) - new Date(b.date)
+        : new Date(b.date) - new Date(a.date)
     );
 
   const groupedTransactions = {};
-  filteredTransactions.forEach((transaction) => {
-    const monthYear = new Date(transaction.date).toLocaleString("default", { month: "long", year: "numeric" });
-    if (!groupedTransactions[monthYear]) {
-      groupedTransactions[monthYear] = [];
-    }
-    groupedTransactions[monthYear].push(transaction);
+  filteredTransactions.forEach((tx) => {
+    const monthYear = new Date(tx.date).toLocaleString("default", { month: "long", year: "numeric" });
+    if (!groupedTransactions[monthYear]) groupedTransactions[monthYear] = [];
+    groupedTransactions[monthYear].push(tx);
   });
+
+  if (!isAuthenticated) {
+    return (
+      <div className="expenses-container">
+        {popupMessage && <div className="popup-message">{popupMessage}</div>}
+        <h2 className="error">Please log in to access the income tracker.</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="expenses-container">
-      <div className="top">
       {popupMessage && <div className="popup-message">{popupMessage}</div>}
-        <h1 className="heading">Expense Tracker</h1>
-      </div>
-
-      <h3>Total Expenses: ₹<span className="red-text">{Math.abs(balance).toFixed(2)}</span></h3>
+      <h1 className="heading">Expense Tracker</h1>
+      <h3>
+        Total Expenses: ₹<span className="red-text">{Math.abs(balance).toFixed(2)}</span>
+      </h3>
 
       <div className="add-expense">
         <input
@@ -141,7 +163,7 @@ const Expenses = () => {
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
         />
-          <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)}>
+        <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)}>
           <option value="">Payment Type</option>
           <option value="Cash">Cash</option>
           <option value="Online Payment">Online Payment</option>
@@ -151,15 +173,22 @@ const Expenses = () => {
         </select>
       </div>
 
-      <button className="expense" onClick={handleSubmit}>Add Expense</button>
+      <button className="expense" onClick={handleSubmit}>
+        Add Expense
+      </button>
 
       <div className="filters">
-        <input type="text" placeholder="Search by Payee, Date, or Description..." value={searchTerm} onChange={handleSearch} />
+        <input
+          type="text"
+          placeholder="Search by Payee, Date, or Description..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button onClick={handleSort}>Sort by Date ({sortOrder.toUpperCase()})</button>
       </div>
 
       <div className="transactions">
-        {Object.keys(groupedTransactions).map((monthYear) => (
+        {Object.entries(groupedTransactions).map(([monthYear, txs]) => (
           <div key={monthYear} className="transaction-month">
             <h2>{monthYear}</h2>
             <table className="transaction-table">
@@ -174,8 +203,8 @@ const Expenses = () => {
                 </tr>
               </thead>
               <tbody>
-                {groupedTransactions[monthYear].map((tx) => (
-                  <tr key={tx._id}>
+                {txs.map((tx) => (
+                  <tr key={tx._id || tx.id}>
                     <td>{tx.payee}</td>
                     <td className="expense-amount">
                       ₹{tx.amount.toFixed(2)} <FaArrowDown className="expense-arrow" />

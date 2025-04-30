@@ -6,56 +6,101 @@ import "./profile.css";
 const Profile = () => {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+
+  // Show popup notification
+  const showPopupMessage = (message) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+    setTimeout(() => {
+      setShowPopup(false);
+      setPopupMessage("");
+    }, 3000);
+  };
 
   useEffect(() => {
+    if (!token) {
+      setIsAuthenticated(false);
+      showPopupMessage("❌ Please log in to access your profile.");
+      return;
+    }
+
     const fetchData = async () => {
       try {
         const response = await fetch("https://devionx-expensetracker.onrender.com/peruser", {
           headers: {
-            token: localStorage.getItem("token"),
+            token: token,
           },
         });
 
         if (!response.ok) {
-          throw new Error("Log in to access your profile");
+          throw new Error("Failed to fetch profile. Log in again.");
         }
 
         const result = await response.json();
         setData(result);
-      } catch (error) {
-        setError("Log in to access your profile");
-        console.error(error);
+      } catch (err) {
+        setError("⚠️ Unable to load profile.");
+        showPopupMessage("⚠️ Error loading profile. Try again.");
+        console.error(err);
       }
     };
 
     fetchData();
-  }, []);
-
-  const username = localStorage.getItem("username");
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
-    navigate("/login");
+    showPopupMessage("👋 Logged out successfully.");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
   };
 
-  if (error) return <p className="error-message">{error}</p>;
+  if (!isAuthenticated) {
+    return (
+      <div className="profile-container">
+        {showPopup && <div className="popup-message">{popupMessage}</div>}
+        <h2 className="error">Please log in to access your profile.</h2>
+      </div>
+    );
+  }
 
-  if (!data) return <p className="loading-message">Loading...</p>;
+  if (error) {
+    return (
+      <div className="profile-container">
+        {showPopup && <div className="popup-message">{popupMessage}</div>}
+        <p className="error-message">{error}</p>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="profile-container">
+        <p className="loading-message">⏳ Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-container">
-      {/* Profile Heading */}
+      {showPopup && <div className="popup-message">{popupMessage}</div>}
+
       <div className="profile-heading">
         <h1>Welcome, {username || "User"}!</h1>
         <p>You're logged into the <strong>Devionx Admin Panel</strong>.</p>
       </div>
 
-      {/* Profile Card */}
       <div className="profile-card">
         <img src={profileImage} alt="Profile" className="profile-image" />
-
         <h2 className="profile-name">{data.name}</h2>
         <p className="profile-email">{data.email}</p>
 

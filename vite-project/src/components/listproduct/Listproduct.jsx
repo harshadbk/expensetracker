@@ -7,7 +7,28 @@ const ListProduct = () => {
   const [allTouch, setAllTouch] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+  
+    const token = localStorage.getItem("token");
+  
+    const showPopupMessage = (message) => {
+      setPopupMessage(message);
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        setPopupMessage("");
+      }, 3000);
+    };
+  
+
   const fetchInfo = async () => {
+    if (!token) {
+      setIsAuthenticated(false);
+      showPopupMessage("❌ Please log in to access the Touches of system.");
+      return;
+    }
     try {
       const response = await fetch("https://devionx-expensetracker.onrender.com/gettouch");
       const data = await response.json();
@@ -36,15 +57,26 @@ const ListProduct = () => {
         },
         body: JSON.stringify({ id }),
       });
-      fetchInfo(); // Refresh data after deletion
+      fetchInfo();
     } catch (error) {
       console.error("Error removing entry:", error);
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="quote-container">
+        {showPopup && <div className="popup-message">{popupMessage}</div>}
+        <h2 className="error">Please log in to access the quote system.</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="listproduct">
       <h1>All Get In Touch</h1>
+
+      {showPopup && <div className="popup-message">{popupMessage}</div>}
 
       {loading ? (
         <p className="loading">Loading...</p>

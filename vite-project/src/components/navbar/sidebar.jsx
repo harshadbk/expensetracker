@@ -36,12 +36,6 @@ const Sidebar = () => {
           <p>Invoices</p>
         </div>
       </Link>
-      <Link to="/visuals" style={{ textDecoration: 'none' }}>
-        <div className="sidebar-item">
-          <img src={VS} alt="List Product" />
-          <p>Visuals</p>
-        </div>
-      </Link>
       <Link to="/listproduct" style={{ textDecoration: 'none' }}>
         <div className="sidebar-item">
           <img src={list_product_icon} alt="List Product" />

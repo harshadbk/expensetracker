@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // ✅ Corrected import
+import { Link, useNavigate } from "react-router-dom";
 import "./navbar.css";
 import navlogo from "../../assets/devon.png";
 import Profile from "../../assets/profile.jpeg";
 
 const Navbar = () => {
-  const navigate = useNavigate(); // ✅ Use navigate hook for redirection
+  const navigate = useNavigate(); 
 
-  // State to manage authentication
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!localStorage.getItem("token")
   );
   const [username, setUsername] = useState(localStorage.getItem("username"));
 
-  // Logout function
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     setIsAuthenticated(false);
     setUsername(null);
-    navigate("/login"); // ✅ Redirects to login page after logout
+    navigate("/login");
   };
 
   return (

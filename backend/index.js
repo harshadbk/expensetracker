@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 app.use(cors({
-  origin: "*", // Allow all origins OR use Netlify domain instead of "*"
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -681,6 +681,70 @@ app.get("/getinvoices", async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+
+app.put('/updateinvoice/:id', async (req, res) => {
+  const invoiceId = req.params.id; // This is your custom id field (e.g., "11")
+  const {
+    payee,
+    totalAmount,
+    amountPaid,
+    description,
+    date,
+    paymentType
+  } = req.body;
+
+  try {
+    const updatedInvoice = await Invoices.findOneAndUpdate(
+      { id: invoiceId }, // match your custom 'id' field
+      {
+        payee,
+        totalAmount,
+        amountPaid,
+        description,
+        date,
+        paymentType
+      },
+      { new: true } // return the updated document
+    );
+
+    if (!updatedInvoice) {
+      return res.status(404).json({ success: false, message: "Invoice not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Invoice updated successfully",
+      updatedInvoice
+    });
+
+  } catch (err) {
+    console.error('Error updating invoice:', err);
+    res.status(500).json({ success: false, message: "Failed to update invoice" });
+  }
+});
+
+app.delete("/deleteinvoice/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+
+    const invoice = await Invoices.findById(_id);
+    if (!invoice) {
+      return res.status(404).json({ success: false, message: "Invoice not found" });
+    }
+
+    const customId = invoice.id;
+
+    await Invoices.findByIdAndDelete(_id);
+
+    console.log("Invoice Deleted Successfully:", customId);
+
+    res.json({ success: true, message: "Invoice deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting invoice:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 app.get('/', (req, res) => {
   res.send('Server is running');

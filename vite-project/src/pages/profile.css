@@ -7,6 +7,34 @@
   margin-left: 300px;
 }
 
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  color: #d32f2f;
+  font-weight: 700;
+  margin-top: 60px;
+  font-size: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  animation: shake 0.3s ease-in-out 0s 2;
+  background-color: #ffe6e6;
+  padding: 15px 25px;
+  border: 2px solid #d32f2f;
+  border-radius: 10px;
+  display: inline-block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
 /* Profile Heading */
 .profile-heading {
   text-align: center;
