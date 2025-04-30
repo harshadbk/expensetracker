@@ -134,7 +134,7 @@ const Invoices = () => {
         return;
       }
 
-      const response = await fetch(`http://127.0.0.1:5000/updateinvoice/${editingInvoice.id}`, {
+      const response = await fetch(`https://devionx-expensetracker.onrender.com/updateinvoice/${editingInvoice.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editingInvoice),
@@ -205,7 +205,7 @@ const Invoices = () => {
 
   const remove = async (_id, customId) => {
     try {
-      const res = await fetch(`http://127.0.0.1:5000/deleteinvoice/${_id}`, {
+      const res = await fetch(`https://devionx-expensetracker.onrender.com/deleteinvoice/${_id}`, {
         method: "DELETE",
       });
   
