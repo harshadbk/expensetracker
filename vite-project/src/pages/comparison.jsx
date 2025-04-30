@@ -9,7 +9,7 @@ import {
     CartesianGrid,
     ResponsiveContainer,
 } from "recharts";
-import "./Comparison.css";
+import "./comparison.css";
 
 const Comparison = () => {
     const [monthlyIncomeData, setMonthlyIncomeData] = useState([]);

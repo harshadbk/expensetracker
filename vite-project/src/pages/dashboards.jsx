@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './dashboard.css';
-import Comparisons from "./comparison.jsx";
+import Comparisons from "./comparison";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, LineChart
