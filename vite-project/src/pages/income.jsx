@@ -164,6 +164,8 @@ const Income = () => {
       </div>
 
       <div className="transactions">
+        <div className="income-divcontainer">
+          <div className="income-scrollarea">
         {Object.keys(groupedTransactions).map((monthYear) => (
           <div key={monthYear} className="transaction-month">
             <h2>{monthYear}</h2>
@@ -195,6 +197,8 @@ const Income = () => {
             </table>
           </div>
         ))}
+        </div>
+        </div>
       </div>
     </div>
   );

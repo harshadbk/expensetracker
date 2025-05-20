@@ -188,6 +188,8 @@ const Expenses = () => {
       </div>
 
       <div className="transactions">
+        <div className="expense-data">
+          <div className="expense-scoll">
         {Object.entries(groupedTransactions).map(([monthYear, txs]) => (
           <div key={monthYear} className="transaction-month">
             <h2>{monthYear}</h2>
@@ -219,6 +221,8 @@ const Expenses = () => {
             </table>
           </div>
         ))}
+        </div>
+        </div>
       </div>
     </div>
   );

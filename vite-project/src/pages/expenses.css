@@ -209,3 +209,17 @@ h3 {
     margin-left: 5px;
     color: #c0392b;
 }
+
+.expense-data {
+  padding: 2rem;
+  background-color: #f5f7fa;
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.expense-scoll {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+}

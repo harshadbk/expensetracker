@@ -29,36 +29,31 @@
   animation: fadeIn 1s ease-in-out;
 }
 
+/* Container */
 .upperpart {
   margin-left: 0px;
-  gap: 20px;
-  height: 50%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  gap: 20px;
+  height: auto;
+  padding: 2rem;
+  animation: fadeInSlide 1s ease-in-out;
 }
 
-/* Form Section */
+/* Add Invoice Box */
 .add-invoice {
+  width: 900px;
+  background: linen;
+  padding: 30px 40px;
+  border-radius: 40px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Align content to the left */
-  justify-content: center;
-  text-align: center;
-  /* Align text to the left */
-  max-width: 600px;
-  width: 100%;
-  background: gainsboro;
-  padding: 20px;
-  border-radius: 40px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 20px 0 20px 30px;
-  /* Moves it towards the left */
+  transition: transform 0.4s ease-in-out;
   animation: slideUp 1s ease-in-out;
-  transform-origin: left;
-  transition: transform 0.5s ease-in-out;
 }
-
 
 .add-invoice:hover {
   transform: scale(1.01);
@@ -66,60 +61,90 @@
 
 /* Input Row */
 .input-row {
-  width: 500px;
-  height: 70px;
-  gap: 30px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.input-row input {
-  width: 70%;
-  padding: 10px;
-  border-radius: 5px;
+/* Input & Select Fields */
+.input-row input,
+.input-row select {
+  flex: 1 1 45%;
+  padding: 12px 15px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
+  transition: all 0.3s ease;
+  background-color: white;
 }
 
 .input-row select {
-  margin-top: 10px;
-  width: 70%;
-  height: 50px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  font-weight: 500;
+  height: 48px;
 }
 
 .input-row input:focus,
 .input-row select:focus {
   border-color: #007bff;
-  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+  box-shadow: 0px 0px 6px rgba(0, 123, 255, 0.4);
+  outline: none;
 }
 
 /* Add Invoice Button */
 .add-invoice-btn {
-  width: 200px;
-  padding: 12px;
-  background: #007bff;
+  width: 220px;
+  padding: 14px;
+  background: linear-gradient(to right, #007bff, #00b4ff);
   color: white;
   font-size: 16px;
   font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
   animation: fadeIn 1s ease-in-out;
+  box-shadow: 0 6px 14px rgba(0, 123, 255, 0.3);
 }
 
 .add-invoice-btn:hover {
   background: #0056b3;
   transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 86, 179, 0.4);
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .invoice-table {
@@ -253,25 +278,23 @@
 }
 
 .filter {
-  background: gainsboro;
-  width: 40%;
-  height: 350px;
-  padding: 10px;
+  background: whitesmoke;
+  width: 110%;
+  height: 160px;
   border-radius: 40px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
+  margin-left:-50px;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   justify-content: center;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 .filter p {
   font-size: 18px;
   font-weight: bold;
   color: #333;
-  margin-right: 10px;
 }
 
 .filter input {
@@ -373,7 +396,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -465,4 +487,21 @@
 
 .cancel-btn:hover {
   background-color: #c0392b;
+}
+
+/* scrollable container */
+
+.invoice-container {
+  margin-top: -50px;
+  padding: 2rem;
+  background-color: #f5f7fa;
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-scroll-area {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
 }

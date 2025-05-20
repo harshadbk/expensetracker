@@ -1,0 +1,326 @@
+.myinvoice-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-left: 350px;
+}
+
+.invoice-heading {
+    background: linear-gradient(135deg, #007bff, #004ba0);
+    color: white;
+    padding: 6px 12px;
+    /* Smaller padding */
+    font-size: 14px;
+    /* Smaller text */
+    border-radius: 8px;
+    width: fit-content;
+    /* Shrink to content width */
+    text-align: center;
+    margin-left: 370px;
+    margin-bottom: 30px;
+    animation: fadeSlide 0.6s ease-in-out;
+    display: inline-block;
+    /* Prevent full-width stretching */
+}
+
+.invoice-upperpart {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.right-section {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.company-logo img {
+    max-width: 150px;
+    height: auto;
+}
+
+.recipient-info h2,
+.company-address h2,
+.invoice-summary h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #004ba0;
+}
+
+.mail,
+.phone {
+    position: relative;
+    padding-left: 26px;
+    font-weight: 500;
+    color: #444;
+    line-height: 1.6;
+}
+
+.icon {
+    position: absolute;
+    left: 0;
+    top: 3px;
+    color: #007bff;
+}
+
+.indent {
+    margin-left: 26px;
+    color: #555;
+}
+
+.addbill {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.addbill h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.bill-data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.bill-data th,
+.bill-data td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.bill-data th {
+    background: #007bff;
+    color: white;
+}
+
+.remove-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.add-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    display: block;
+    margin: 10px auto;
+    transition: transform 0.2s;
+}
+
+.add-btn:hover {
+    transform: scale(1.05);
+}
+
+.summary-table-container {
+    width: fit-content;
+    margin-left: auto;
+    /* Align to right */
+    padding: 12px 16px;
+    background-color: antiquewhite;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeSlide 0.6s ease-in-out;
+}
+
+.summary-table {
+    width: 250px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.summary-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.summary-table tr:last-child td {
+    border-bottom: none;
+}
+
+.total-row td {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Optional animation */
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .invoice-upperpart {
+        grid-template-columns: 1fr;
+    }
+
+    .invoice-heading {
+        width: 100%;
+        font-size: 18px;
+    }
+
+    .addbill,
+    .summary-row {
+        font-size: 14px;
+    }
+}
+
+/* bank statement */
+
+.bank-statement {
+    background-color: #f9f9f9;
+    border-left: 5px solid #4caf50;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+.payment-instruction {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.bank-details p {
+    margin: 4px 0;
+    font-size: 1rem;
+    color: #444;
+}
+
+.bank-details strong {
+    color: #222;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* share and pdf button */
+
+.invoice-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.action-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover {
+    background-color: #43a047;
+    transform: translateY(-2px);
+}
+
+.share-button {
+    background-color: #2196f3;
+}
+
+.share-button:hover {
+    background-color: #1976d2;
+}
+
+.pdf-button {
+    background-color: #ff9800;
+}
+
+.pdf-button:hover {
+    background-color: #fb8c00;
+}
+
+.save-button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-left: 10px;
+}
+
+.save-button:hover {
+    background-color: #218838;
+}
